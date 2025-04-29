@@ -2,7 +2,7 @@
 
 
 /usr/local/bin/librewolf \
-  https://meta.ai >/dev/null 2>&1 &
+  https://www.meta.ai >/dev/null 2>&1 &
 sleep 1.5
 
 id=$(echo $(xdotool search \
