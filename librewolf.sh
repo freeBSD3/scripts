@@ -11,7 +11,7 @@ id=$(echo $(xdotool search \
 xdotool windowmove $id 0 0
 xdotool windowsize $id 100% 100% +0 +0
 
-sleep 5.5
+sleep 7
 
 xdotool mousemove 770 531 click 1
 xdotool type 'hey'
