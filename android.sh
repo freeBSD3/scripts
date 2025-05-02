@@ -1,6 +1,8 @@
 #!/bin/sh
 
 
+DOC_PATH=/home/jbm/Documents/farmed
+
 random_tap()
 {
   local x1=$1 y1=$2 x2=$3 y2=$4
@@ -163,6 +165,15 @@ while xdotool search --name SM-X510 > /dev/null; do
     random_tap 678 591 858 636
     sleep 0.35
     random_tap 678 591 858 636
+    DOC_PATH="/home/jbm/Documents/farmed"
+    awk -F: '
+      BEGIN {
+        increments[1]=9
+        increments[2]=2
+        increments[3]=1
+      }
+      {$2+=increments[NR]}1' OFS=: "$DOC_PATH" > temp.txt &&
+      mv temp.txt "$DOC_PATH"
     sleep 10
   fi
 
