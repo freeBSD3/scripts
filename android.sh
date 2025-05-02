@@ -165,7 +165,6 @@ while xdotool search --name SM-X510 > /dev/null; do
     random_tap 678 591 858 636
     sleep 0.35
     random_tap 678 591 858 636
-    DOC_PATH="/home/jbm/Documents/farmed"
     awk -F: '
       BEGIN {
         increments[1]=9
