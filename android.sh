@@ -17,7 +17,7 @@ random_tap()
 
   local random_x=$(( $(od -An -N2 -t u2 /dev/urandom) % range_x + min_x ))
   local random_y=$(( $(od -An -N2 -t u2 /dev/urandom) % range_y + min_y ))
-  echo $random_x $random_y
+  # echo $random_x $random_y
 
   local id=$(xdotool search --name SM-X510)
   xdotool mousemove $random_x $random_y click 1
@@ -173,6 +173,7 @@ while xdotool search --name SM-X510 > /dev/null; do
       }
       {$2+=increments[NR]}1' OFS=: "$DOC_PATH" > temp.txt &&
       mv temp.txt "$DOC_PATH"
+    cat $DOC_PATH
     sleep 10
   fi
 
@@ -196,6 +197,7 @@ while xdotool search --name SM-X510 > /dev/null; do
     sleep 2
   fi
   sleep 15
+  adb logcat -c
 done &
 
 # Keep screen awake
