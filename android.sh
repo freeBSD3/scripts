@@ -3,43 +3,44 @@
 
 random_tap()
 {
-  local x1=$1 y1=$2 x2=$3 y2=$4
+  x1=$1 y1=$2 x2=$3 y2=$4
 
-  local min_x=$(( x1 < x2 ? x1 : x2 ))
-  local max_x=$(( x1 > x2 ? x1 : x2 ))
-  local min_y=$(( y1 < y2 ? y1 : y2 ))
-  local max_y=$(( y1 > y2 ? y1 : y2 ))
+  min_x=$(( x1 < x2 ? x1 : x2 ))
+  max_x=$(( x1 > x2 ? x1 : x2 ))
+  min_y=$(( y1 < y2 ? y1 : y2 ))
+  max_y=$(( y1 > y2 ? y1 : y2 ))
 
-  local range_x=$(( max_x - min_x + 1 ))
-  local range_y=$(( max_y - min_y + 1 ))
+  range_x=$(( max_x - min_x + 1 ))
+  range_y=$(( max_y - min_y + 1 ))
 
-  local random_x=$(( $(od -An -N2 -t u2 /dev/urandom) % range_x + min_x ))
-  local random_y=$(( $(od -An -N2 -t u2 /dev/urandom) % range_y + min_y ))
+  random_x=$(( $(od -An -N2 -t u2 /dev/urandom) % range_x + min_x ))
+  random_y=$(( $(od -An -N2 -t u2 /dev/urandom) % range_y + min_y ))
   # echo $random_x $random_y
 
-  local id=$(xdotool search --name SM-X510)
+  id=$(xdotool search --name SM-X510)
   xdotool mousemove $random_x $random_y click 1
 }
 
 random_swipe() {
-  local num_swipes=$1
-  local direction=$2
-  local min_x=287
-  local max_x=1080
-  local min_y=207
-  local max_y=630
-  local duration=200
+  num_swipes=$1
+  direction=$2
+  min_x=287
+  max_x=1080
+  min_y=207
+  max_y=630
+  duration=200
 
-  local range_x=$(( max_x - min_x + 1 ))
-  local range_y=$(( max_y - min_y + 1 ))
-  local swipe_length=$(( range_x * 65 / 100 ))
+  range_x=$(( max_x - min_x + 1 ))
+  range_y=$(( max_y - min_y + 1 ))
+  swipe_length=$(( range_x * 65 / 100 ))
 
-  local id=$(xdotool search --name SM-X510)
+  id=$(xdotool search --name SM-X510)
 
   i=0
   while [ $i -lt $num_swipes ]; do
-    local random_y=$(( $(od -An -N2 -t u2 /dev/urandom) % range_y + min_y ))
-    local random_x_start random_x_end
+    random_y=$(( $(od -An -N2 -t u2 /dev/urandom) % range_y + min_y ))
+    random_x_start=0
+    random_x_end=0
 
     if [ "$direction" = "rl" ]; then
       random_x_start=$(( $(od -An -N2 -t u2 /dev/urandom) % (range_x - swipe_length) + min_x + swipe_length ))
@@ -52,14 +53,14 @@ random_swipe() {
       return 1
     fi
 
-    local delta_x=$(( random_x_end - random_x_start ))
-    local delta_y=$(( $(od -An -N2 -t u2 /dev/urandom) % 40 - 20 ))
-    local pitch=$(echo "scale=2; a($delta_y / $delta_x) * 180 / 3.14159265359" | bc -l)
+    delta_x=$(( random_x_end - random_x_start ))
+    delta_y=$(( $(od -An -N2 -t u2 /dev/urandom) % 40 - 20 ))
+    pitch=$(echo "scale=2; a($delta_y / $delta_x) * 180 / 3.14159265359" | bc -l)
     while [ $(echo "$pitch > 20 || $pitch < -20" | bc -l) -eq 1 ]; do
       delta_y=$(( $(od -An -N2 -t u2 /dev/urandom) % 40 - 20 ))
       pitch=$(echo "scale=2; a($delta_y / $delta_x) * 180 / 3.14159265359" | bc -l)
     done
-    local random_y_end=$(( random_y + delta_y ))
+    random_y_end=$(( random_y + delta_y ))
 
     xdotool mousemove $random_x_start $random_y mousedown 1
     sleep 0.25
@@ -103,7 +104,7 @@ sleep 2
 scrcpy -m 1250 --max-fps 5 -b 5M --no-audio \
   >/dev/null 2>&1 &
 adb logcat -c
-sleep 15
+sleep 40
 adb shell settings put system screen_brightness 2
 id=$(xdotool search --name SM-X510)
 sleep 0.25
@@ -118,6 +119,8 @@ random_tap 690 541 726 575
 while xdotool search --name SM-X510 > /dev/null; do
   adb logcat -c
   rm /tmp/*.png
+  sleep 0.25
+  scrot /tmp/fullscreen.png
   scrot -a 678,591,180,45 /tmp/replay.png
   scrot -a 1024,724,161,40 /tmp/fight.png
   scrot -a 1088,491,130,30 /tmp/auto.png
@@ -127,10 +130,66 @@ while xdotool search --name SM-X510 > /dev/null; do
   scrot -a 500,450,250,100 /tmp/reconnect.png
   sleep 1
 
-  if image_diff reconnect 90; then
+  output1=$(./image_find /tmp/fullscreen.png \
+    ~/tablet/special_quests.png)
+  if [ $? -eq 0 ]; then
+    set -- $output1
+    IFS=, read x1 y1 <<EOF
+    $1
+EOF
+    IFS=, read x2 y2 <<EOF
+    $2
+EOF
+    random_tap $x1 $y1 $x2 $y2
+    sleep 0.36
+    random_tap $x1 $y1 $x2 $y2
+  fi
+
+  output2=$(./image_find /tmp/fullscreen.png \
+    ~/tablet/rol.png)
+  if [ $? -eq 0 ]; then
+    set -- $output2
+    IFS=, read x1 y1 <<EOF
+    $1
+EOF
+    IFS=, read x2 y2 <<EOF
+    $2
+EOF
+    random_tap $x1 $y1 $x2 $y2
+  fi
+
+  output3=$(./image_find /tmp/fullscreen.png \
+    ~/tablet/rol2.png)
+  if [ $? -eq 0 ]; then
+    set -- $output3
+    IFS=, read x1 y1 <<EOF
+    $1
+EOF
+    IFS=, read x2 y2 <<EOF
+    $2
+EOF
+    random_tap $x1 $y1 $x2 $y2
+    sleep 0.41
+    random_tap $x1 $y1 $x2 $y2
+  fi
+
+  output4=$(./image_find /tmp/fullscreen.png \
+    ~/tablet/quests.png)
+  if [ $? -eq 0 ]; then
+    random_swipe 4 rl
+  fi
+
+  output5=$(./image_find /tmp/fullscreen.png \
+    ~/tablet/gauntlet.png)
+  if [ $? -eq 0 ]; then
+    random_swipe 5 rl
+  fi
+
+  if image_diff reconnect 80; then
     random_tap 527 473 717 519
     sleep 0.31
     random_tap 527 473 717 519
+    echo "Tapped on Reconnect"
   fi
 
   if image_diff beginquest 90; then
@@ -143,16 +202,6 @@ while xdotool search --name SM-X510 > /dev/null; do
     random_tap 329 125 425 190 
     sleep 0.39
     random_tap 329 125 425 190 
-    sleep 5
-    random_swipe 3 rl
-    sleep 2
-    random_tap 490 474 691 683
-  fi
-
-  if image_diff quests 90; then
-    random_swipe 3 rl
-    sleep 2
-    random_tap 490 474 691 683
   fi
 
   if image_diff replay 95; then
