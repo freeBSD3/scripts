@@ -123,10 +123,15 @@ while xdotool search --name SM-X510 > /dev/null; do
   scrot -a 1088,491,130,30 /tmp/auto.png
   scrot -a 218,106,207,21 /tmp/home.png
   scrot -a 116,635,160,64 /tmp/quests.png
-  scrot -a 694,568,230,100 /tmp/rol.png
-  scrot -a 60,560,215,50 /tmp/special_quests.png
   scrot -a 1007,719,208,57 /tmp/beginquest.png
+  scrot -a 500,450,250,100 /tmp/reconnect.png
   sleep 1
+
+  if image_diff reconnect 90; then
+    random_tap 527 473 717 519
+    sleep 0.31
+    random_tap 527 473 717 519
+  fi
 
   if image_diff beginquest 90; then
     random_tap 1007 719 1207 760
@@ -150,37 +155,13 @@ while xdotool search --name SM-X510 > /dev/null; do
     random_tap 490 474 691 683
   fi
 
-  if image_diff special_quests 90; then
-    random_swipe 5 rl
-    sleep 2
-    random_tap 699 571 925 705
-    sleep 2
-    random_tap 832 610 940 712
-    sleep 2
-  fi
-
   if image_diff replay 95; then
     random_tap 678 591 858 636
     sleep 0.35
     random_tap 678 591 858 636
-    awk -F: '
-      BEGIN {
-        increments[1]=9
-        increments[2]=2
-        increments[3]=1
-      }
-      {$2+=increments[NR]}1' OFS=: "$DOC_PATH" > temp.txt &&
-      mv temp.txt "$DOC_PATH"
-    cat $DOC_PATH
     sleep 10
   fi
 
-  if image_diff rol 90; then
-    random_tap 699 571 925 705
-    sleep 2
-    random_tap 832 610 940 712
-    sleep 2
-  fi
   if image_diff fight 95; then
     random_tap 1024 724 1195 764
     sleep 0.57
@@ -194,8 +175,10 @@ while xdotool search --name SM-X510 > /dev/null; do
     random_tap 1088 491 1212 521
     sleep 2
   fi
+
   sleep 15
   adb logcat -c
+
 done &
 
 # Keep screen awake
